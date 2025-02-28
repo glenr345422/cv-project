@@ -1,0 +1,62 @@
+class Customer:
+    def __init__(self, customer_id, name, email):
+        self.customer_id = customer_id
+        self.name = name
+        self.email = email
+        self.purchases = []
+
+    def add_purchase(self, product, amount):
+        self.purchases.append({"product": product, "amount": amount})
+
+    def get_total_spent(self):
+        return sum(purchase["amount"] for purchase in self.purchases)
+
+    def display_customer_info(self):
+        print(f'Customer ID: {self.customer_id}, Name: {self.name}, Email: {self.email}')
+        print("Purchase History:")
+        for purchase in self.purchases:
+            print(f'- {purchase["product"]}: ${purchase["amount"]}')
+        print(f'Total Spent: ${self.get_total_spent()}')
+
+class CRMSystem:
+    def __init__(self):
+        self.customers = {}
+
+    def add_customer(self, customer_id, name, email):
+        if customer_id in self.customers:
+            print("Customer already exists.")
+        else:
+            self.customers[customer_id] = Customer(customer_id, name, email)
+            print(f'Customer {name} added successfully!')
+
+    def record_purchase(self, customer_id, product, amount):
+        if customer_id in self.customers:
+            self.customers[customer_id].add_purchase(product, amount)
+            print(f'Purchase recorded for {self.customers[customer_id].name}')
+        else:
+            print("Customer not found.")
+
+    def show_customer_details(self, customer_id):
+        if customer_id in self.customers:
+            self.customers[customer_id].display_customer_info()
+        else:
+            print("Customer not found.")
+
+    def list_customers(self):
+        if not self.customers:
+            print("No customers in the system.")
+        else:
+            print("Customers:")
+            for customer in self.customers.values():
+                print(f'{customer.customer_id} - {customer.name}')
+
+# Example Usage
+if __name__ == "__main__":
+    crm = CRMSystem()
+    crm.add_customer(1, "Alice Johnson", "alice@example.com")
+    crm.add_customer(2, "Bob Smith", "bob@example.com")
+    crm.record_purchase(1, "Laptop", 1200)
+    crm.record_purchase(1, "Mouse", 50)
+    crm.record_purchase(2, "Monitor", 300)
+    crm.show_customer_details(1)
+    crm.list_customers()
