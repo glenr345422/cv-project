@@ -1,0 +1,21 @@
+import paramiko
+
+host = "your-server-ip"
+username = "your-username"
+password = "your-password"
+
+def execute_command(command):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, username=username, password=password)
+    
+    stdin, stdout, stderr = ssh.exec_command(command)
+    output = stdout.read().decode()
+    ssh.close()
+    return output
+
+print("Disk Usage:")
+print(execute_command("df -h"))
+
+print("Active Processes:")
+print(execute_command("ps aux"))
