@@ -1,0 +1,70 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sales_data = pd.DataFrame({
+    "Product": ["Laptop", "Smartphone", "Headphones", "Shoes", "Laptop", "Smartphone", "Headphones"],
+    "Category": ["Electronics", "Electronics", "Accessories", "Fashion", "Electronics", "Electronics", "Accessories"],
+    "Price": [800, 600, 50, 100, 800, 600, 50],
+    "Quantity": [5, 10, 15, 8, 7, 12, 20],
+    "Cost Price": [700, 500, 30, 70, 700, 500, 30],
+    "Country": ["USA", "USA", "Canada", "USA", "Canada", "Canada", "USA"],
+    "Date": ["2025-01-01", "2025-01-01", "2025-01-02", "2025-01-02", "2025-01-03", "2025-01-03", "2025-01-03"]
+})
+
+sales_data["Date"] = pd.to_datetime(sales_data["Date"])
+sales_data["Total Sales"] = sales_data["Price"] * sales_data["Quantity"]
+sales_data["Profit"] = (sales_data["Price"] - sales_data["Cost Price"]) * sales_data["Quantity"]
+
+total_revenue = sales_data["Total Sales"].sum()
+total_profit = sales_data["Profit"].sum()
+print(f"Total Revenue: ${total_revenue:.2f}")
+print(f"Total Profit: ${total_profit:.2f}")
+
+top_products = sales_data.groupby("Product")["Quantity"].sum().sort_values(ascending=False)
+print("\nTop Selling Products:")
+print(top_products)
+
+country_sales = sales_data.groupby("Country")["Total Sales"].sum().sort_values(ascending=False)
+print("\nRevenue by Country:")
+print(country_sales)
+
+sales_data["Month"] = sales_data["Date"].dt.to_period("M")
+monthly_sales = sales_data.groupby("Month")["Total Sales"].sum()
+print("\nMonthly Revenue:")
+print(monthly_sales)
+
+plt.figure(figsize=(10, 6))
+top_products.plot(kind="bar", color="skyblue")
+plt.title("Top Selling Products", fontsize=16)
+plt.xlabel("Product", fontsize=12)
+plt.ylabel("Quantity Sold", fontsize=12)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(10, 6))
+country_sales.plot(kind="bar", color="orange")
+plt.title("Revenue by Country", fontsize=16)
+plt.xlabel("Country", fontsize=12)
+plt.ylabel("Total Revenue", fontsize=12)
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(10, 6))
+monthly_sales.plot(kind="line", marker="o", color="green")
+plt.title("Monthly Revenue", fontsize=16)
+plt.xlabel("Month", fontsize=12)
+plt.ylabel("Total Revenue", fontsize=12)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+category_revenue = sales_data.groupby("Category")["Total Sales"].sum()
+plt.figure(figsize=(8, 5))
+category_revenue.plot(kind="pie", autopct="%1.1f%%", startangle=140, colors=["gold", "lightblue", "lightgreen", "pink"])
+plt.title("Revenue by Category", fontsize=14)
+plt.ylabel("")
+plt.tight_layout()
+plt.show()
