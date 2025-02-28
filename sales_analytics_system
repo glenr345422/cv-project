@@ -1,0 +1,69 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+class SalesAnalytics:
+    def __init__(self):
+        self.sales_data = pd.DataFrame(columns=["Date", "Product", "Category", "Price", "Quantity", "Revenue"])
+    
+    def add_sale(self, date, product, category, price, quantity):
+        revenue = price * quantity
+        new_sale = {"Date": date, "Product": product, "Category": category, "Price": price, "Quantity": quantity, "Revenue": revenue}
+        self.sales_data = self.sales_data.append(new_sale, ignore_index=True)
+    
+    def total_revenue(self):
+        return self.sales_data["Revenue"].sum()
+    
+    def top_selling_products(self, n=5):
+        return self.sales_data.groupby("Product")["Quantity"].sum().sort_values(ascending=False).head(n)
+    
+    def category_revenue(self):
+        return self.sales_data.groupby("Category")["Revenue"].sum()
+    
+    def sales_trend(self):
+        self.sales_data["Date"] = pd.to_datetime(self.sales_data["Date"])
+        return self.sales_data.groupby(self.sales_data["Date"].dt.to_period("M"))["Revenue"].sum()
+    
+    def visualize_sales_trend(self):
+        trend = self.sales_trend()
+        plt.figure(figsize=(10, 5))
+        trend.plot(kind='line', marker='o', color='b')
+        plt.title("Monthly Sales Trend")
+        plt.xlabel("Month")
+        plt.ylabel("Total Revenue")
+        plt.grid()
+        plt.show()
+    
+    def visualize_category_revenue(self):
+        category_rev = self.category_revenue()
+        plt.figure(figsize=(8, 5))
+        category_rev.plot(kind='pie', autopct="%1.1f%%", startangle=140, colors=sns.color_palette("pastel"))
+        plt.title("Revenue by Category")
+        plt.ylabel("")
+        plt.show()
+    
+    def visualize_top_products(self, n=5):
+        top_products = self.top_selling_products(n)
+        plt.figure(figsize=(10, 5))
+        top_products.plot(kind='bar', color='green')
+        plt.title(f"Top {n} Selling Products")
+        plt.xlabel("Product")
+        plt.ylabel("Quantity Sold")
+        plt.xticks(rotation=45)
+        plt.show()
+
+# Example Usage
+if __name__ == "__main__":
+    analytics = SalesAnalytics()
+    analytics.add_sale("2025-01-01", "Laptop", "Electronics", 1000, 5)
+    analytics.add_sale("2025-01-02", "Smartphone", "Electronics", 800, 10)
+    analytics.add_sale("2025-01-03", "Shoes", "Fashion", 150, 7)
+    analytics.add_sale("2025-01-04", "Watch", "Accessories", 200, 4)
+    analytics.add_sale("2025-01-05", "Headphones", "Electronics", 100, 15)
+    
+    print("Total Revenue:", analytics.total_revenue())
+    print("Top Selling Products:")
+    print(analytics.top_selling_products())
+    analytics.visualize_sales_trend()
+    analytics.visualize_category_revenue()
+    analytics.visualize_top_products()
